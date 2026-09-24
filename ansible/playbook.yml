@@ -54,6 +54,7 @@
         path: "{{ app_dir }}"
         executable: "/usr/bin/npm-{{ node_major }}"
         production: true
+      become: true
       become_user: "{{ app_name }}"
       notify: Restart application
 
