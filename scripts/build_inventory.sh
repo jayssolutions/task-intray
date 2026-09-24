@@ -2,16 +2,26 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/../terraform"
-terraform output -json instance_public_ips | jq -r '.[]' | awk '
-BEGIN { print "[app]" }
-{ print $1 " ansible_user=ec2-user" }
-' > ../ansible/inventory.ini
+INVENTORY=../ansible/inventory.ini
 
-HOSTS=$(grep -c 'ansible_user' ../ansible/inventory.ini || true)
-if [ "$HOSTS" -eq 0 ]; then
-  echo "Error: No hosts found in inventory. Terraform output may be empty." >&2
+APP_IPS=$(terraform output -json instance_public_ips | jq -r '.[]')
+MONITORING_IP=$(terraform output -json monitoring_public_ip | jq -r 'select(. != null)')
+
+if [ -z "$APP_IPS" ]; then
+  echo "Error: No app hosts found. Terraform output may be empty." >&2
   exit 1
 fi
 
-echo "Inventory built with $HOSTS host(s):"
-cat ../ansible/inventory.ini
+{
+  echo "[app]"
+  for ip in $APP_IPS; do echo "$ip ansible_user=ec2-user"; done
+
+  if [ -n "$MONITORING_IP" ]; then
+    echo
+    echo "[monitoring]"
+    echo "$MONITORING_IP ansible_user=ec2-user"
+  fi
+} > "$INVENTORY"
+
+echo "Inventory built:"
+cat "$INVENTORY"

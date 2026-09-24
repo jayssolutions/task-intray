@@ -30,8 +30,19 @@ variable "admin_cidr" {
   default     = "127.0.0.1/32"
 }
 
+variable "enable_monitoring" {
+  description = "Create a Prometheus EC2 instance that scrapes the app instances"
+  type        = bool
+  default     = true
+}
+
+variable "prometheus_instance_type" {
+  type    = string
+  default = "t3.small"
+}
+
 variable "monitoring_cidrs" {
-  description = "CIDRs of Prometheus servers allowed to scrape the app on port 3000 (empty = no access)"
+  description = "Extra CIDRs (e.g. an external Prometheus) allowed to scrape the app on port 3000"
   type        = list(string)
   default     = []
 }

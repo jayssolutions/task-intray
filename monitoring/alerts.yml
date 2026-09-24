@@ -1,6 +1,15 @@
 groups:
   - name: application-alerts
     rules:
+      - alert: AppInstanceDown
+        expr: up{job="task-intray"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.instance }} is down"
+          description: "Prometheus has not been able to scrape {{ $labels.instance }} for 2 minutes."
+
       - alert: HighApplicationErrorRate
         expr: |
           (
@@ -11,15 +20,24 @@ groups:
         for: 5m
         labels:
           severity: warning
+        annotations:
+          summary: "High 5xx error rate"
+          description: "More than 5% of requests returned 5xx over the last 5 minutes."
 
       - alert: HighProcessCPU
-        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        expr: rate(process_cpu_seconds_total{job="task-intray"}[5m]) * 100 > 80
         for: 5m
         labels:
           severity: warning
+        annotations:
+          summary: "High CPU on {{ $labels.instance }}"
+          description: "The Node.js process has used more than 80% of a CPU for 5 minutes."
 
       - alert: HighProcessMemory
-        expr: process_resident_memory_bytes > 500 * 1024 * 1024
+        expr: process_resident_memory_bytes{job="task-intray"} > 500 * 1024 * 1024
         for: 5m
         labels:
           severity: warning
+        annotations:
+          summary: "High memory on {{ $labels.instance }}"
+          description: "The Node.js process resident memory is above 500 MB."

@@ -23,4 +23,17 @@ module "compute" {
   admin_cidr         = var.admin_cidr
   monitoring_cidrs   = var.monitoring_cidrs
   public_key         = var.public_key
+
+  monitoring_security_group_id = var.enable_monitoring ? module.monitoring[0].security_group_id : null
+}
+
+module "monitoring" {
+  source        = "./modules/monitoring"
+  count         = var.enable_monitoring ? 1 : 0
+  project_name  = var.project_name
+  vpc_id        = module.network.vpc_id
+  subnet_id     = module.network.public_subnet_ids[0]
+  key_name      = module.compute.key_name
+  admin_cidr    = var.admin_cidr
+  instance_type = var.prometheus_instance_type
 }
