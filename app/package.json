@@ -1,5 +1,5 @@
 {
-  "name": "devops-e2e-node-app",
+  "name": "task-intray-app",
   "version": "1.0.0",
   "private": true,
   "main": "src/server.js",

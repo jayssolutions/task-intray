@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "project_name" {
   type    = string
-  default = "devops-e2e-node"
+  default = "task-intray"
 }
 
 variable "vpc_cidr" {
