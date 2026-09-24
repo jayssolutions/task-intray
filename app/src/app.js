@@ -18,7 +18,7 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     end({
       method: req.method,
-      route: req.path,
+      route: req.route ? req.baseUrl + req.route.path : "unmatched",
       status_code: res.statusCode
     });
   });

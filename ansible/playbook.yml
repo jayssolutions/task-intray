@@ -8,14 +8,15 @@
     app_name: task-intray
     app_dir: /opt/task-intray
     app_port: 3000
+    node_major: 22
     app_archive: "{{ lookup('env', 'APP_ARCHIVE') | default('../app.tar.gz', true) }}"
 
   tasks:
     - name: Install Node.js and npm
       ansible.builtin.dnf:
         name:
-          - nodejs
-          - npm
+          - "nodejs{{ node_major }}"
+          - "nodejs{{ node_major }}-npm"
           - tar
         state: present
 
@@ -46,12 +47,15 @@
         remote_src: true
         owner: "{{ app_name }}"
         group: "{{ app_name }}"
+      notify: Restart application
 
     - name: Install production dependencies
       community.general.npm:
         path: "{{ app_dir }}"
+        executable: "/usr/bin/npm-{{ node_major }}"
         production: true
       become_user: "{{ app_name }}"
+      notify: Restart application
 
     - name: Install systemd service
       ansible.builtin.template:

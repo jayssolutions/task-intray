@@ -7,6 +7,11 @@ variable "instance_type" { type = string }
 variable "instance_count" { type = number }
 variable "admin_cidr" { type = string }
 
+variable "monitoring_cidrs" {
+  type    = list(string)
+  default = []
+}
+
 variable "public_key" {
   type      = string
   sensitive = true
