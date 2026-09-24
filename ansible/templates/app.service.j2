@@ -1,5 +1,5 @@
 [Unit]
-Description=DevOps e2e Node.js Application
+Description=task-intray Node.js Application
 After=network.target
 
 [Service]
@@ -8,7 +8,7 @@ Group={{ app_name }}
 WorkingDirectory={{ app_dir }}
 Environment=NODE_ENV=production
 Environment=PORT={{ app_port }}
-ExecStart=/usr/bin/node {{ app_dir }}/src/server.js
+ExecStart=/usr/bin/node-{{ node_major }} {{ app_dir }}/src/server.js
 Restart=always
 RestartSec=5
 

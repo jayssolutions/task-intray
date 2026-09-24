@@ -44,5 +44,14 @@ terraform.rc
 # Optional: ignore plan files saved before destroying Terraform configuration
 # Uncomment the line below if you want to ignore planout files.
 # planout
-terraform/modules/compute/ansible_inventory.ini
-terraform/modules/compute/id_ed25519
+
+# Generated Ansible inventory and build artifacts
+ansible/inventory.ini
+*.tar.gz
+
+# Keys and secrets
+id_ed25519*
+id_rsa*
+*.pem
+.env
+.env.*

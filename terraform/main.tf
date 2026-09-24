@@ -21,5 +21,6 @@ module "compute" {
   instance_type      = var.instance_type
   instance_count     = var.instance_count
   admin_cidr         = var.admin_cidr
+  monitoring_cidrs   = var.monitoring_cidrs
   public_key         = var.public_key
 }

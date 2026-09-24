@@ -30,6 +30,12 @@ variable "admin_cidr" {
   default     = "127.0.0.1/32"
 }
 
+variable "monitoring_cidrs" {
+  description = "CIDRs of Prometheus servers allowed to scrape the app on port 3000 (empty = no access)"
+  type        = list(string)
+  default     = []
+}
+
 variable "public_key" {
   description = "SSH public key content"
   type        = string

@@ -1,9 +1,9 @@
 filebeat.inputs:
-  - type: filestream
-    id: node-app
-    enabled: true
-    paths:
-      - /var/log/messages
+  # Amazon Linux 2023 has no rsyslog by default; the systemd service logs to journald.
+  - type: journald
+    id: task-intray
+    include_matches.match:
+      - _SYSTEMD_UNIT=task-intray.service
     fields:
       service: task-intray
     fields_under_root: true

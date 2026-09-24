@@ -26,6 +26,17 @@ resource "aws_security_group" "app" {
     security_groups = [var.alb_security_group]
   }
 
+  dynamic "ingress" {
+    for_each = length(var.monitoring_cidrs) > 0 ? [1] : []
+    content {
+      description = "Prometheus scrape of /metrics"
+      from_port   = 3000
+      to_port     = 3000
+      protocol    = "tcp"
+      cidr_blocks = var.monitoring_cidrs
+    }
+  }
+
   ingress {
     description = "SSH for Ansible"
     from_port   = 22

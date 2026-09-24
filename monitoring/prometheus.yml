@@ -5,9 +5,26 @@ rule_files:
   - /etc/prometheus/alerts.yml
 
 scrape_configs:
-  - job_name: "node-app"
+  # Discovers app instances by tag instead of hard-coded hostnames.
+  # The Prometheus host needs ec2:DescribeInstances (instance profile or credentials)
+  # and must be inside var.monitoring_cidrs to reach port 3000.
+  - job_name: "task-intray"
     metrics_path: /metrics
-    static_configs:
-      - targets:
-          - "app-instance-1:3000"
-          - "app-instance-2:3000"
+    ec2_sd_configs:
+      - region: us-east-1
+        port: 3000
+        filters:
+          - name: tag:Role
+            values: ["application"]
+          - name: instance-state-name
+            values: ["running"]
+    relabel_configs:
+      # Scrape via private IP when Prometheus runs in the VPC; switch to
+      # __meta_ec2_public_ip if it scrapes from outside.
+      - source_labels: [__meta_ec2_private_ip]
+        target_label: __address__
+        replacement: "$1:3000"
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance
+      - source_labels: [__meta_ec2_availability_zone]
+        target_label: availability_zone
