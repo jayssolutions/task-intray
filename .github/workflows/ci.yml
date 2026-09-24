@@ -99,7 +99,7 @@ jobs:
 
       - run: pip install ansible-lint
       - run: ansible-galaxy collection install -r ansible/requirements.yml
-      - run: ansible-lint ansible/playbook.yml
+      - run: ansible-lint ansible/playbook.yml ansible/monitoring.yml
 
   configs:
     name: Scripts & monitoring configs
@@ -110,7 +110,9 @@ jobs:
       - name: ShellCheck
         run: shellcheck scripts/*.sh
 
-      - name: Validate Prometheus alert rules
+      - name: Validate Prometheus config and alert rules
+        # Mounted at /etc/prometheus so the absolute rule_files path resolves.
+        # Keep the image tag in sync with prometheus_version in ansible/monitoring.yml.
         run: >
-          docker run --rm -v "$PWD/monitoring:/work:ro" --entrypoint promtool
-          prom/prometheus:latest check rules /work/alerts.yml
+          docker run --rm -v "$PWD/monitoring:/etc/prometheus:ro" --entrypoint promtool
+          prom/prometheus:v3.14.0 check config /etc/prometheus/prometheus.yml

@@ -27,6 +27,17 @@ resource "aws_security_group" "app" {
   }
 
   dynamic "ingress" {
+    for_each = var.monitoring_security_group_id == null ? [] : [1]
+    content {
+      description     = "Prometheus scrape of /metrics from the monitoring host"
+      from_port       = 3000
+      to_port         = 3000
+      protocol        = "tcp"
+      security_groups = [var.monitoring_security_group_id]
+    }
+  }
+
+  dynamic "ingress" {
     for_each = length(var.monitoring_cidrs) > 0 ? [1] : []
     content {
       description = "Prometheus scrape of /metrics"

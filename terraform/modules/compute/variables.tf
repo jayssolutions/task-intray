@@ -12,6 +12,11 @@ variable "monitoring_cidrs" {
   default = []
 }
 
+variable "monitoring_security_group_id" {
+  type    = string
+  default = null
+}
+
 variable "public_key" {
   type      = string
   sensitive = true
